@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { usePortfolio } from '../utils/PortfolioContext';
 import { useToast } from './Toast';
+import profileAvatar from '../assets/images/denish_profile_bromo_1784695914997.jpg';
 import {
   LayoutDashboard,
   User,
   FolderGit2,
   Wrench,
-
   Briefcase,
   Award,
   Mail,
@@ -23,7 +23,9 @@ import {
   Save,
   X,
   Sparkles,
-  ArrowLeft
+  ArrowLeft,
+  Camera,
+  Upload
 } from 'lucide-react';
 
 export default function AdminPanel() {
@@ -621,6 +623,105 @@ export default function AdminPanel() {
                 </h2>
 
                 <form onSubmit={handleSaveInfo} className="space-y-5">
+                  {/* Foto Profil (Avatar) Section */}
+                  <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-semibold text-slate-300">Foto Profil (Avatar)</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInfoForm(prev => ({ ...prev, avatar: profileAvatar }));
+                          addToast('Foto profil dikembalikan ke default Gunung Bromo.', 'info');
+                        }}
+                        className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1 rounded-lg transition-colors border border-blue-500/20 font-medium cursor-pointer"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Reset Foto Default</span>
+                      </button>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-5">
+                      <div className="relative group w-24 h-24 rounded-2xl overflow-hidden border-2 border-cyan-500/40 bg-slate-950 flex-shrink-0 shadow-lg flex items-center justify-center">
+                        <img
+                          src={infoForm.avatar || profileAvatar}
+                          alt="Preview Avatar"
+                          className="w-full h-full object-cover object-center"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = profileAvatar;
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                          <Camera className="w-6 h-6 text-cyan-400" />
+                        </div>
+                      </div>
+
+                      <div className="flex-1 w-full space-y-3">
+                        <div>
+                          <label className="block text-[11px] text-slate-400 mb-1 flex items-center gap-1.5">
+                            <Upload className="w-3.5 h-3.5 text-blue-400" />
+                            <span>Unggah Foto Baru dari HP / Komputer</span>
+                          </label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                if (file.size > 10 * 1024 * 1024) {
+                                  addToast('Ukuran foto terlalu besar (maksimal 10MB)', 'error');
+                                  return;
+                                }
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  const img = new Image();
+                                  img.onload = () => {
+                                    const canvas = document.createElement('canvas');
+                                    const maxDim = 800;
+                                    let width = img.width;
+                                    let height = img.height;
+                                    if (width > height) {
+                                      if (width > maxDim) {
+                                        height = Math.round((height * maxDim) / width);
+                                        width = maxDim;
+                                      }
+                                    } else {
+                                      if (height > maxDim) {
+                                        width = Math.round((width * maxDim) / height);
+                                        height = maxDim;
+                                      }
+                                    }
+                                    canvas.width = width;
+                                    canvas.height = height;
+                                    const ctx = canvas.getContext('2d');
+                                    ctx.drawImage(img, 0, 0, width, height);
+                                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                                    setInfoForm(prev => ({ ...prev, avatar: compressedDataUrl }));
+                                    addToast('Foto profil berhasil diunggah! Tekan "Simpan Perubahan" di bawah.', 'info');
+                                  };
+                                  img.src = event.target.result;
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                            className="block w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] text-slate-400 mb-1">Atau Gunakan Link / URL Foto Online</label>
+                          <input
+                            type="text"
+                            value={infoForm.avatar || ''}
+                            onChange={(e) => setInfoForm({ ...infoForm, avatar: e.target.value })}
+                            placeholder="https://... atau Biarkan kosong untuk foto default"
+                            className="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-slate-300 mb-1">Nama Lengkap</label>

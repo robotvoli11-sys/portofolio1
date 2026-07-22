@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Download, Send, Sparkles, ArrowDown, Code, CheckCircle, Github, Linkedin, Instagram, User } from 'lucide-react';
 import { usePortfolio } from '../utils/PortfolioContext';
 import { useToast } from './Toast';
+import profileAvatar from '../assets/images/denish_profile_bromo_1784695914997.jpg';
 
 export default function Hero() {
   const { addToast } = useToast();
@@ -141,20 +142,16 @@ export default function Hero() {
 
               {/* Main Avatar Container */}
               <div className="relative w-full h-full rounded-3xl overflow-hidden glass-panel p-2 border-2 border-cyan-500/30 shadow-2xl flex items-center justify-center bg-slate-900/50">
-                {PERSONAL_INFO.avatar ? (
-                  <img
-                    src={PERSONAL_INFO.avatar}
-                    alt={PERSONAL_INFO.name}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover rounded-2xl hover:scale-105 transition-transform duration-500"
-                  />
-                ) : (
-                  <div className="w-full h-full rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
-                    <User className="w-20 h-20 text-cyan-400 mb-3 opacity-80" />
-                    <span className="text-sm font-bold text-slate-200">{PERSONAL_INFO.name}</span>
-                    <span className="text-xs text-slate-400 mt-1">{PERSONAL_INFO.title}</span>
-                  </div>
-                )}
+                <img
+                  src={PERSONAL_INFO.avatar || profileAvatar}
+                  alt={PERSONAL_INFO.name}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover rounded-2xl hover:scale-105 transition-transform duration-500"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = profileAvatar;
+                  }}
+                />
               </div>
 
               {/* Floating Badge 1: Rekayasa Perangkat Lunak */}

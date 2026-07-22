@@ -17,9 +17,12 @@ export const PortfolioProvider = ({ children }) => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        // If avatar is missing, empty, or a non-data URL static path that might differ across builds, enforce INITIAL_INFO.avatar
+        if (!parsed.avatar || (!parsed.avatar.startsWith('data:image/') && !parsed.avatar.startsWith('http'))) {
+          parsed.avatar = INITIAL_INFO.avatar;
+        }
         const hasStaleData = parsed.email === 'denish.lutfian.dev@gmail.com' ||
           (parsed.location && parsed.location.includes('Jakarta')) ||
-          (parsed.avatar && !parsed.avatar.startsWith('data:image/') && parsed.avatar !== PERSONAL_INFO.avatar) ||
           (parsed.stats && parsed.stats.some(s => s.label === 'Pengalaman PKL' || s.value === 'Aktif' || s.label === 'Kompetensi' || s.value === 'Dinas Perumahan'));
         if (hasStaleData) {
           localStorage.removeItem('portfolio_personal_info');
