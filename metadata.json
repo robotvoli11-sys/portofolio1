@@ -1,0 +1,6 @@
+{
+  "name": "Portofolio Pribadi Modern",
+  "description": "Website portofolio pribadi modern, clean, responsive, dan interaktif dengan React, Tailwind CSS, dan Framer Motion.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
